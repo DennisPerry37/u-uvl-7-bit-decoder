@@ -23,3 +23,10 @@ The trade-off is that the mode (`644`) and filename (`data.bin`) are fixed. If y
 ## The awkward edge
 
 `uu_decode` is lenient about a bare trailing backtick line (it ignores it) but strict about `end` appearing without a matching `begin` — that raises `UUDecodeError`. If your input is a bare payload that happens to contain a line beginning with `end`, the decoder will misinterpret it as framing; prefix such input with a `begin` line or strip the offending line before decoding.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
